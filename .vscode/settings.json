@@ -2,6 +2,20 @@
   "files.associations": {
     "*.vert": "glsl",
     "raylib.h": "c",
-    "dlfcn.h": "c"
+    "dlfcn.h": "c",
+    "cstdlib": "c",
+    "game.h": "c",
+    "game_loader.h": "c",
+    "windows.h": "c",
+    "stdio.h": "c",
+    "corecrt_stdio_config.h": "c",
+    "corecrt.h": "c",
+    "_mingw.h": "c",
+    "_mingw_mac.h": "c",
+    "_mingw_secapi.h": "c",
+    "_cygwin.h": "c",
+    "vadefs.h": "c",
+    "_mingw_ddk.h": "c",
+    "winresrc.h": "c"
   }
 }
