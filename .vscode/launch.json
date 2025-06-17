@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug main",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/main",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "Build main",
+      "MIMode": "lldb",
+      "setupCommands": [
+        {
+          "text": "command script import lldb.macosx.threadplan",
+          "description": "Enable LLDB macOS thread plan",
+          "ignoreFailures": true
+        }
+      ]
+    }
+  ]
+}

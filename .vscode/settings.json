@@ -1,0 +1,7 @@
+{
+  "files.associations": {
+    "*.vert": "glsl",
+    "raylib.h": "c",
+    "dlfcn.h": "c"
+  }
+}
