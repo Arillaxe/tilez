@@ -76,7 +76,7 @@ void loadGameLib()
       gameTick = NULL;
     }
 
-    handle = dlopen(dll_path, RTLD_LAZY);
+    handle = dlopen(dllPath, RTLD_LAZY);
     if (!handle)
     {
       fprintf(stderr, "dlopen error: %s\n", dlerror());

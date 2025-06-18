@@ -1,7 +1,7 @@
-OS = WINDOWS
+OS = MACOS
 
 CC = gcc
-CFLAGS = -I./include
+CFLAGS = -I./include -Wall
 LDFLAGS = -L./bin
 LDFLAGS_SHARED = -L./bin
 SRC = src/main.c src/game_loader.c

@@ -3,6 +3,7 @@
 #if TARGET_OS_MAC
 #define MACOS
 #include <dlfcn.h>
+#include <sys/stat.h>
 #endif
 #elif defined _WIN32
 #define WINDOWS
@@ -88,6 +89,8 @@ typedef struct tagBITMAPINFOHEADER
 #endif
 
 #include "stdio.h"
+#include "time.h"
+#include "stdlib.h"
 
 typedef void (*tickFuncT)();
 
