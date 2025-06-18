@@ -12,4 +12,6 @@
 #define EXPORT __declspec(dllexport)
 #endif
 
+#include "ui.h"
+
 void gameTick();

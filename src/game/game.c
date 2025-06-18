@@ -9,5 +9,7 @@ EXPORT void gameTick()
 
   DrawText("Yo wazzup 123", 10, 30, 24, RED);
 
+  drawUI();
+
   EndDrawing();
 }
