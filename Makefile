@@ -2,8 +2,8 @@ OS = MACOS
 
 CC = gcc
 CFLAGS = -I./include -Wall
-LDFLAGS = -L./bin
-LDFLAGS_SHARED = -L./bin
+LDFLAGS = -L./bin -lbox2d
+LDFLAGS_SHARED = -L./bin -lbox2d
 SRC = src/main.c src/game_loader.c
 OUT = main
 OUT_GAME = libgamelib
