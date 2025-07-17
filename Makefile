@@ -3,6 +3,7 @@ CFLAGS = -I./include -Wall
 LDFLAGS = -L./bin
 LDFLAGS_SHARED = -L./bin
 SRC = src/main.c src/game_loader.c
+HEADERS = src/globals.h src/game_loader.h
 OUT = main
 OUT_GAME = libgamelib
 
@@ -28,7 +29,7 @@ all: game main
 make_dirs:
 	mkdir -p out
 
-$(OUT_DIR)/$(OUT): $(SRC)
+$(OUT_DIR)/$(OUT): $(SRC) $(HEADERS)
 	$(CC) $(SRC) -o $(OUT_DIR)/$(OUT) $(CFLAGS) $(LDFLAGS)
 
 ifeq ($(OS),Windows_NT)
