@@ -3,11 +3,17 @@
 #include <raylib.h>
 #include "globals.h"
 
+#include "game_state.h"
+
 int main()
 {
   SetConfigFlags(FLAG_WINDOW_HIGHDPI);
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "FPS Test");
   SetTargetFPS(60);
+
+  GameState *gameState = getGameState();
+
+  gameState->tilesetTexture = LoadTexture("./resources/tiles.png");
 
   while (!WindowShouldClose())
   {
@@ -17,7 +23,7 @@ int main()
 
     if (gameTick)
     {
-      gameTick();
+      gameTick(gameState);
     }
   }
 

@@ -2,14 +2,15 @@ CC = gcc
 CFLAGS = -I./include -Wall
 LDFLAGS = -L./bin
 LDFLAGS_SHARED = -L./bin
-SRC = src/main.c src/game_loader.c
-HEADERS = src/globals.h src/game_loader.h
+SRC = $(wildcard src/*.c)
+SRC_HEADERS = $(wildcard src/*.h)
 OUT = main
 OUT_GAME = libgamelib
 
 OUT_DIR = out
 
 GAME_SRC = $(wildcard src/game/*.c)
+GAME_HEADERS = $(wildcard src/game/*.h)
 
 ifeq ($(OS),Windows_NT)
 	OUT := $(OUT).exe
@@ -29,13 +30,13 @@ all: game main
 make_dirs:
 	mkdir -p out
 
-$(OUT_DIR)/$(OUT): $(SRC) $(HEADERS)
+$(OUT_DIR)/$(OUT): $(SRC) $(SRC_HEADERS)
 	$(CC) $(SRC) -o $(OUT_DIR)/$(OUT) $(CFLAGS) $(LDFLAGS)
 
 ifeq ($(OS),Windows_NT)
-$(OUT_DIR)/$(OUT_GAME): $(GAME_SRC) $(OUT_DIR)/raylib.dll
+$(OUT_DIR)/$(OUT_GAME): $(GAME_SRC) $(GAME_HEADERS) $(OUT_DIR)/raylib.dll
 else
-$(OUT_DIR)/$(OUT_GAME): $(GAME_SRC)
+$(OUT_DIR)/$(OUT_GAME): $(GAME_SRC) $(GAME_HEADERS)
 endif
 	$(CC) $(GAME_SRC) -o $(OUT_DIR)/$(OUT_GAME) $(CFLAGS) $(LDFLAGS_SHARED)
 

@@ -13,5 +13,6 @@
 #endif
 
 #include "ui.h"
+#include "../game_state.h"
 
-void gameTick();
+void gameTick(GameState *gameState);

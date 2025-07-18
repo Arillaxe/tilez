@@ -104,7 +104,7 @@ void loadGameLib()
       else
       {
         lastModTime = currentModTime;
-        printf("Reloaded DLL at %lld\n", lastModTime);
+        printf("Reloaded DLL at %ld\n", lastModTime);
       }
     }
 #endif
