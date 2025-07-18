@@ -49,10 +49,26 @@ void updateEditor(GameState *gameState)
 
   if (GuiButton(buttons[0], "#1#Open"))
   {
+    char *filename = openFileDialog();
+    FILE *file = fopen(filename, "rb");
+
+    if (file)
+    {
+      size_t read = fread(&gameState->level.tiles, sizeof(TILE_TYPE), MAP_SIZE * MAP_SIZE, file);
+      fclose(file);
+    }
   }
 
   if (GuiButton(buttons[1], "#2#Save"))
   {
+    char *filename = saveFileDialog();
+    FILE *file = fopen(filename, "wb");
+
+    if (file)
+    {
+      size_t written = fwrite(&gameState->level.tiles, sizeof(TILE_TYPE), MAP_SIZE * MAP_SIZE, file);
+      fclose(file);
+    }
   }
 
   // placing blocks

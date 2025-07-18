@@ -10,23 +10,6 @@ static HMODULE gameLib = NULL;
 static void *handle = NULL;
 #endif
 
-void PrintLastError(const char *prefix)
-{
-  DWORD errorCode = GetLastError();
-
-  char messageBuffer[512];
-  FormatMessageA(
-      FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-      NULL,
-      errorCode,
-      0,
-      messageBuffer,
-      sizeof(messageBuffer),
-      NULL);
-
-  printf("%s (Error %lu): %s\n", prefix, errorCode, messageBuffer);
-}
-
 time_t getFileModTime(const char *path)
 {
 #ifdef WINDOWS
@@ -61,8 +44,6 @@ void loadGameLib()
 
   if (currentModTime <= 0)
   {
-    // PrintLastError("Failed to find game dll");
-    // exit(1);
     return;
   }
 

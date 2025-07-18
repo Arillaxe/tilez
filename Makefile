@@ -30,6 +30,10 @@ all: game main
 make_dirs:
 	mkdir -p out
 
+out/libdialog.a: macos/dialog.m macos/dialog.h
+	$(CC) -c macos/dialog.m -o out/dialog.o -ObjC -framework Cocoa
+	ar rcs out/libdialog.a out/dialog.o
+
 $(OUT_DIR)/$(OUT): $(SRC) $(SRC_HEADERS)
 	$(CC) $(SRC) -o $(OUT_DIR)/$(OUT) $(CFLAGS) $(LDFLAGS)
 
@@ -38,12 +42,12 @@ $(OUT_DIR)/$(OUT_GAME): $(GAME_SRC) $(GAME_HEADERS) $(OUT_DIR)/raylib.dll
 else
 $(OUT_DIR)/$(OUT_GAME): $(GAME_SRC) $(GAME_HEADERS)
 endif
-	$(CC) $(GAME_SRC) -o $(OUT_DIR)/$(OUT_GAME) $(CFLAGS) $(LDFLAGS_SHARED)
+	$(CC) $(GAME_SRC) -o $(OUT_DIR)/$(OUT_GAME) $(CFLAGS) $(LDFLAGS_SHARED) -ldialog -L./out
 
 main: make_dirs
 	make $(OUT_DIR)/$(OUT)
 
-game: make_dirs
+game: make_dirs out/libdialog.a
 	make $(OUT_DIR)/$(OUT_GAME)
 
 ifeq ($(OS),Windows_NT)

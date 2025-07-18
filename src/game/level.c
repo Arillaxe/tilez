@@ -264,11 +264,3 @@ void initLevel(Level *level)
 
   memcpy(level->tiles, fill, sizeof(fill));
 }
-
-void saveLevel()
-{
-}
-
-void loadLevel()
-{
-}
