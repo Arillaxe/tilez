@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tileset mapping</title>
+  <style>
+    * {
+      margin: 0;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      background: #222034;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #main {
+      border: 1px solid gray;
+    }
+
+    .top {
+      display: flex;
+      align-items: center;
+    }
+
+    #export {
+      position: absolute;
+      width: 100px;
+      top: 10px;
+      left: 10px;
+    }
+
+    button {
+      border: none;
+      background-color: #99e550;
+      border-radius: 0;
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
+      font-weight: bold;
+      font-family: sans-serif;
+      color: #222034;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<div class="top">
+  <button id="prev"><</button>
+  <canvas id="main" width="600" height="600"></canvas>
+    <button id="next">></button>
+</div>
+
+<canvas id="tileset" width="300" height="300"></canvas>
+
+<button id="export">Export</button>
+  
+<script>
+
+const bitsetMap = JSON.parse(localStorage.getItem('bitset')) ?? {};
+
+const tilesetImage = new Image();
+tilesetImage.src = './resources/tiles.png';
+
+const tilesetCanvas = document.getElementById('tileset');
+const tilesetCtx = tilesetCanvas.getContext('2d');
+
+tilesetCtx.imageSmoothingEnabled = false;
+
+const mainCanvas = document.getElementById('main');
+const mainCtx = mainCanvas.getContext('2d');
+
+mainCtx.imageSmoothingEnabled = false;
+
+const prevButton = document.getElementById('prev');
+const nextButton = document.getElementById('next');
+
+let tilesetCursor = null;
+
+const tileSize = 300 / 8;
+const mainTileSize = 600 / 3;
+
+let selectedTile = { x: 0, y: 0 };
+
+const renderTileset = () => {
+  tilesetCtx.clearRect(0, 0, 300, 300);
+
+  tilesetCtx.drawImage(tilesetImage, 0, 0, 64, 64, 0, 0, 300, 300);
+
+  tilesetCtx.lineWidth = 4;
+  tilesetCtx.strokeStyle = "green";
+  tilesetCtx.strokeRect(selectedTile.x * tileSize - 2, selectedTile.y * tileSize - 2, tileSize + 4, tileSize + 4);
+
+  if (tilesetCursor) {
+    tilesetCtx.lineWidth = 4;
+    tilesetCtx.strokeStyle = "red";
+    tilesetCtx.strokeRect(tilesetCursor.x * tileSize - 2, tilesetCursor.y * tileSize - 2, tileSize + 4, tileSize + 4);
+  }
+}
+
+const tilesetMouseMove = (e) => {
+  tilesetCursor = {
+    x: Math.floor(e.offsetX / tileSize),
+    y: Math.floor(e.offsetY / tileSize),
+  }
+}
+
+const tilesetClick = (e) => {
+  selectedTile = {
+    x: Math.floor(e.offsetX / tileSize),
+    y: Math.floor(e.offsetY / tileSize),
+  }
+}
+
+const tilesetMouseLeave = (e) => {
+  tilesetCursor = null;
+}
+
+const enabledTiles = 0;
+
+function toggleBit(value, n) {
+  return value ^ (1 << n);
+}
+
+const mainClick = (e) => {
+  const x = Math.floor(e.offsetX / mainTileSize);
+  const y = Math.floor(e.offsetY / mainTileSize);
+
+  if (x === 1 && y === 1) return;
+
+  let index = y * 3 + x;
+
+  if (index > 4) index--;
+
+  const tileIndex = selectedTile.y * 8 + selectedTile.x;
+
+  if (!bitsetMap[tileIndex]) {
+    bitsetMap[tileIndex] = 0;
+  }
+
+  bitsetMap[tileIndex] ^= (1 << index);
+
+  localStorage.setItem('bitset', JSON.stringify(bitsetMap));
+}
+
+tilesetCanvas.addEventListener('mousemove', tilesetMouseMove);
+tilesetCanvas.addEventListener('mouseleave', tilesetMouseLeave);
+tilesetCanvas.addEventListener('click', tilesetClick);
+
+mainCanvas.addEventListener('click', mainClick);
+
+const renderMain = () => {
+  mainCtx.clearRect(0, 0, 600, 600);
+
+  if (selectedTile) {
+    mainCtx.drawImage(tilesetImage, selectedTile.x * 8, selectedTile.y * 8, 8, 8, mainTileSize, mainTileSize, mainTileSize, mainTileSize);
+  }
+
+  const tileIndex = selectedTile.y * 8 + selectedTile.x;
+  const bitset = bitsetMap[tileIndex];
+
+  for (let i = 0; i < 8; i++) {
+    const isSet = (bitset & (1 << i)) !== 0;
+
+    if (isSet) {
+      const n = i > 3 ? i + 1 : i;
+      const x = n % 3;
+      const y = Math.floor(n / 3);
+
+      mainCtx.fillStyle = '#45283c';
+      mainCtx.fillRect(x * mainTileSize, y * mainTileSize, mainTileSize, mainTileSize);
+    }
+  }
+}
+
+const onPrev = () => {
+  let tileIndex = selectedTile.y * 8 + selectedTile.x;
+
+  if (tileIndex === 0) {
+    return;
+  }
+
+  tileIndex--;
+
+  selectedTile.x = tileIndex % 8;
+  selectedTile.y = Math.floor(tileIndex / 8);
+}
+
+const onNext = () => {
+  let tileIndex = selectedTile.y * 8 + selectedTile.x;
+
+  if (tileIndex === 63) {
+    return;
+  }
+
+  tileIndex++;
+
+  selectedTile.x = tileIndex % 8;
+  selectedTile.y = Math.floor(tileIndex / 8);
+}
+
+const onDown = () => {
+  if (selectedTile.y < 7) {
+    selectedTile.y++;
+  }
+}
+
+const onUp = () => {
+  if (selectedTile.y > 0) {
+    selectedTile.y--;
+  }
+}
+
+prevButton.addEventListener('click', onPrev);
+nextButton.addEventListener('click', onNext);
+
+const render = () => {
+  renderTileset();
+  renderMain();
+
+  requestAnimationFrame(render);
+}
+
+const keyboardHandler = (e) => {
+  if (['ArrowLeft', 'a'].includes(e.key)) onPrev();
+  else if (['ArrowRight', 'd'].includes(e.key)) onNext();
+  else if (['ArrowDown', 's'].includes(e.key)) onDown();
+  else if (['ArrowUp', 'w'].includes(e.key)) onUp();
+}
+
+document.body.addEventListener('keydown', keyboardHandler);
+
+render();
+
+const onExport = () => {
+  function toBitset8(num) {
+    return (num & 0xFF).toString(2).padStart(8, '0');
+  }
+
+  const exportString = `
+const TileRule tileRules[TILE_RULE_COUNT] = {
+${Object.entries(bitsetMap).map(([k, v]) => `{${k}, 0b${toBitset8(v)}},`).join('\n')}
+};
+  `;
+
+  console.log(exportString);
+}
+
+const exportButton = document.getElementById('export');
+
+exportButton.addEventListener('click', onExport);
+
+</script>
+</body>
+</html>
