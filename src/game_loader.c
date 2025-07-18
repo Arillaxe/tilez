@@ -1,6 +1,7 @@
 #include "game_loader.h"
 
 static tickFuncT gameTick = NULL;
+static initFuncT initGame = NULL;
 static time_t lastModTime = 0;
 
 #ifdef WINDOWS
@@ -8,6 +9,23 @@ static HMODULE gameLib = NULL;
 #elif defined MACOS
 static void *handle = NULL;
 #endif
+
+void PrintLastError(const char *prefix)
+{
+  DWORD errorCode = GetLastError();
+
+  char messageBuffer[512];
+  FormatMessageA(
+      FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+      NULL,
+      errorCode,
+      0,
+      messageBuffer,
+      sizeof(messageBuffer),
+      NULL);
+
+  printf("%s (Error %lu): %s\n", prefix, errorCode, messageBuffer);
+}
 
 time_t getFileModTime(const char *path)
 {
@@ -43,8 +61,8 @@ void loadGameLib()
 
   if (currentModTime <= 0)
   {
-    printf("Failed to find game dll");
-    exit(1);
+    // PrintLastError("Failed to find game dll");
+    // exit(1);
     return;
   }
 
@@ -56,6 +74,7 @@ void loadGameLib()
       FreeLibrary(gameLib);
       gameLib = NULL;
       gameTick = NULL;
+      initGame = NULL;
     }
 
     Sleep(100);
@@ -68,11 +87,12 @@ void loadGameLib()
 
     if (!gameLib)
     {
-      printf("Failed to load DLL\n");
+      PrintLastError("Failed to load DLL");
       exit(1);
     }
 
     gameTick = (tickFuncT)GetProcAddress(gameLib, "gameTick");
+    initGame = (initFuncT)GetProcAddress(gameLib, "initGame");
 
     lastModTime = currentModTime;
     printf("Reloaded DLL at %lld\n", lastModTime);
@@ -82,6 +102,7 @@ void loadGameLib()
       dlclose(handle);
       handle = NULL;
       gameTick = NULL;
+      initGame = NULL;
     }
 
     handle = dlopen(dllPath, RTLD_LAZY);
@@ -93,6 +114,7 @@ void loadGameLib()
     else
     {
       gameTick = (tickFuncT)dlsym(handle, "gameTick");
+      initGame = (tickFuncT)dlsym(handle, "initGame");
       char *error = dlerror();
       if (error != NULL)
       {
@@ -100,6 +122,7 @@ void loadGameLib()
         dlclose(handle);
         handle = NULL;
         gameTick = NULL;
+        initGame = NULL;
       }
       else
       {
@@ -119,15 +142,22 @@ void unloadGameLib()
     FreeLibrary(gameLib);
     gameLib = NULL;
     gameTick = NULL;
+    initGame = NULL;
   }
 #elif defined MACOS
   dlclose(handle);
   handle = NULL;
   gameTick = NULL;
+  initGame = NULL;
 #endif
 }
 
 tickFuncT getGameTickFunc()
 {
   return gameTick;
+}
+
+initFuncT getInitGameFunc()
+{
+  return initGame;
 }

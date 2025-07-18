@@ -14,5 +14,8 @@
 
 #include "ui.h"
 #include "../game_state.h"
+#include "editor.h"
+
+void initGame(GameState *gameState);
 
 void gameTick(GameState *gameState);

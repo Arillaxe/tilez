@@ -49,22 +49,38 @@
       color: #222034;
       cursor: pointer;
     }
+
+    #counter {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      font-size: 24px;
+      transform: translate(-50%);
+      font-weight: bold;
+      font-family: sans-serif;
+      color: white;
+    }
   </style>
 </head>
 <body>
-<div class="top">
-  <button id="prev"><</button>
-  <canvas id="main" width="600" height="600"></canvas>
-    <button id="next">></button>
-</div>
+  <div id="counter">1/256</div>
+  <div class="top">
+    <button id="prev"><</button>
+    <canvas id="main" width="600" height="600"></canvas>
+      <button id="next">></button>
+  </div>
 
-<canvas id="tileset" width="300" height="300"></canvas>
+  <canvas id="tileset" width="300" height="300"></canvas>
 
-<button id="export">Export</button>
+  <button id="export">Export</button>
   
 <script>
 
-const bitsetMap = JSON.parse(localStorage.getItem('bitset')) ?? {};
+const couter = document.getElementById('counter');
+
+const bitsetMap = JSON.parse(localStorage.getItem('bitset')) ?? Array(256).fill(0).reduce((acc, _, idx) => ({ ...acc, [idx]: 0 }), {});
+
+let bitsetIndex = 0;
 
 const tilesetImage = new Image();
 tilesetImage.src = './resources/tiles.png';
@@ -87,16 +103,21 @@ let tilesetCursor = null;
 const tileSize = 300 / 8;
 const mainTileSize = 600 / 3;
 
-let selectedTile = { x: 0, y: 0 };
+let selectedTile = {
+    x: bitsetMap[bitsetIndex] % 8,
+    y: Math.floor(bitsetMap[bitsetIndex] / 8),
+  };
 
 const renderTileset = () => {
   tilesetCtx.clearRect(0, 0, 300, 300);
 
   tilesetCtx.drawImage(tilesetImage, 0, 0, 64, 64, 0, 0, 300, 300);
 
-  tilesetCtx.lineWidth = 4;
-  tilesetCtx.strokeStyle = "green";
-  tilesetCtx.strokeRect(selectedTile.x * tileSize - 2, selectedTile.y * tileSize - 2, tileSize + 4, tileSize + 4);
+  if (selectedTile) {
+    tilesetCtx.lineWidth = 4;
+    tilesetCtx.strokeStyle = "green";
+    tilesetCtx.strokeRect(selectedTile.x * tileSize - 2, selectedTile.y * tileSize - 2, tileSize + 4, tileSize + 4);
+  }
 
   if (tilesetCursor) {
     tilesetCtx.lineWidth = 4;
@@ -117,6 +138,8 @@ const tilesetClick = (e) => {
     x: Math.floor(e.offsetX / tileSize),
     y: Math.floor(e.offsetY / tileSize),
   }
+  bitsetMap[bitsetIndex] = selectedTile.x + selectedTile.y * 8;
+  localStorage.setItem('bitset', JSON.stringify(bitsetMap));
 }
 
 const tilesetMouseLeave = (e) => {
@@ -129,45 +152,20 @@ function toggleBit(value, n) {
   return value ^ (1 << n);
 }
 
-const mainClick = (e) => {
-  const x = Math.floor(e.offsetX / mainTileSize);
-  const y = Math.floor(e.offsetY / mainTileSize);
-
-  if (x === 1 && y === 1) return;
-
-  let index = y * 3 + x;
-
-  if (index > 4) index--;
-
-  const tileIndex = selectedTile.y * 8 + selectedTile.x;
-
-  if (!bitsetMap[tileIndex]) {
-    bitsetMap[tileIndex] = 0;
-  }
-
-  bitsetMap[tileIndex] ^= (1 << index);
-
-  localStorage.setItem('bitset', JSON.stringify(bitsetMap));
-}
-
 tilesetCanvas.addEventListener('mousemove', tilesetMouseMove);
 tilesetCanvas.addEventListener('mouseleave', tilesetMouseLeave);
 tilesetCanvas.addEventListener('click', tilesetClick);
 
-mainCanvas.addEventListener('click', mainClick);
-
 const renderMain = () => {
   mainCtx.clearRect(0, 0, 600, 600);
 
-  if (selectedTile) {
-    mainCtx.drawImage(tilesetImage, selectedTile.x * 8, selectedTile.y * 8, 8, 8, mainTileSize, mainTileSize, mainTileSize, mainTileSize);
-  }
+  const x = bitsetMap[bitsetIndex] % 8;
+  const y = Math.floor(bitsetMap[bitsetIndex] / 8);
 
-  const tileIndex = selectedTile.y * 8 + selectedTile.x;
-  const bitset = bitsetMap[tileIndex];
+  mainCtx.drawImage(tilesetImage, x * 8, y * 8, 8, 8, mainTileSize, mainTileSize, mainTileSize, mainTileSize);
 
   for (let i = 0; i < 8; i++) {
-    const isSet = (bitset & (1 << i)) !== 0;
+    const isSet = (bitsetIndex & (1 << i)) !== 0;
 
     if (isSet) {
       const n = i > 3 ? i + 1 : i;
@@ -181,40 +179,20 @@ const renderMain = () => {
 }
 
 const onPrev = () => {
-  let tileIndex = selectedTile.y * 8 + selectedTile.x;
-
-  if (tileIndex === 0) {
-    return;
+  if (bitsetIndex > 0) bitsetIndex--;
+  couter.innerText = `${bitsetIndex + 1}/256`;
+  selectedTile = {
+    x: bitsetMap[bitsetIndex] % 8,
+    y: Math.floor(bitsetMap[bitsetIndex] / 8),
   }
-
-  tileIndex--;
-
-  selectedTile.x = tileIndex % 8;
-  selectedTile.y = Math.floor(tileIndex / 8);
 }
 
 const onNext = () => {
-  let tileIndex = selectedTile.y * 8 + selectedTile.x;
-
-  if (tileIndex === 63) {
-    return;
-  }
-
-  tileIndex++;
-
-  selectedTile.x = tileIndex % 8;
-  selectedTile.y = Math.floor(tileIndex / 8);
-}
-
-const onDown = () => {
-  if (selectedTile.y < 7) {
-    selectedTile.y++;
-  }
-}
-
-const onUp = () => {
-  if (selectedTile.y > 0) {
-    selectedTile.y--;
+  if (bitsetIndex < 255) bitsetIndex++;
+  couter.innerText = `${bitsetIndex + 1}/256`;
+  selectedTile = {
+    x: bitsetMap[bitsetIndex] % 8,
+    y: Math.floor(bitsetMap[bitsetIndex] / 8),
   }
 }
 
@@ -231,8 +209,6 @@ const render = () => {
 const keyboardHandler = (e) => {
   if (['ArrowLeft', 'a'].includes(e.key)) onPrev();
   else if (['ArrowRight', 'd'].includes(e.key)) onNext();
-  else if (['ArrowDown', 's'].includes(e.key)) onDown();
-  else if (['ArrowUp', 'w'].includes(e.key)) onUp();
 }
 
 document.body.addEventListener('keydown', keyboardHandler);
@@ -245,8 +221,8 @@ const onExport = () => {
   }
 
   const exportString = `
-const TileRule tileRules[TILE_RULE_COUNT] = {
-${Object.entries(bitsetMap).map(([k, v]) => `{${k}, 0b${toBitset8(v)}},`).join('\n')}
+const TileRule tileRules[256] = {
+${Object.entries(bitsetMap).map(([k, v]) => `{0b${toBitset8(k)}, ${v}},`).join('\n')}
 };
   `;
 

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Map Editor</title>
+  <style>
+        * {
+      margin: 0;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      background: #222034;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #main {
+      border: 1px solid gray;
+    }
+
+    #tileset {
+      position: absolute;
+      top: 70px;
+      left: 10px;
+      display: none;
+    }
+
+    #export {
+      position: absolute;
+      width: 100px;
+      top: 10px;
+      left: 10px;
+    }
+
+    #reset {
+      position: absolute;
+      width: 100px;
+      top: 10px;
+      left: 120px;
+    }
+
+    button {
+      border: none;
+      background-color: #99e550;
+      border-radius: 0;
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
+      font-weight: bold;
+      font-family: sans-serif;
+      color: #222034;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <button id="export">Export</button>
+  <button id="reset">Reset</button>
+  <canvas id="main" width="1280" height="720"></canvas>
+  <canvas id="tileset" width="300" height="300"></canvas>
+<script>
+
+const exportButton = document.getElementById('export');
+const resetButton = document.getElementById('reset');
+
+const mainCanvas = document.getElementById('main');
+const tilesetCanvas = document.getElementById('tileset');
+
+const mainCtx = mainCanvas.getContext('2d');
+const tilesetCtx = tilesetCanvas.getContext('2d');
+
+mainCtx.imageSmoothingEnabled = false;
+tilesetCtx.imageSmoothingEnabled = false;
+
+const tilesetImage = new Image();
+tilesetImage.src = './resources/tiles.png';
+
+let map = JSON.parse(localStorage.getItem('map')) || Array.from({ length: 256 }, () => Array(256).fill(0));
+
+const onReset = () => {
+ map = Array.from({ length: 256 }, () => Array(256).fill(0));
+  localStorage.setItem('map', JSON.stringify(map));
+}
+
+resetButton.addEventListener('click', onReset);
+
+const renderTileset = () => {
+  tilesetCtx.clearRect(0, 0, 300, 300);
+  tilesetCtx.drawImage(tilesetImage, 0, 0, 64, 64, 0, 0, 300, 300);
+}
+
+const tileSize = 32;
+
+const camera = {
+  x: 0, y: 0, zoom: 1,
+}
+
+const renderMain = () => {
+  mainCtx.clearRect(0, 0, 1280, 720);
+  mainCtx.save();
+  mainCtx.scale(camera.zoom, camera.zoom);
+  mainCtx.translate(-camera.x, -camera.y);
+
+  mainCtx.strokeRect(0, 0, 256 * tileSize, 256 * tileSize);
+
+  for (let i = 0; i < 256; i++) {
+    for (let j = 0; j < 256; j++) {
+      if (map[i][j]) {
+        mainCtx.fillStyle = 'black';
+        mainCtx.fillRect(i * tileSize, j * tileSize, tileSize, tileSize);
+      }
+    }
+  }
+
+  mainCtx.restore();
+}
+
+let isDrawing = false;
+let currentButton = null;
+
+const paintTile = (e) => {
+  const mouseX = e.offsetX / camera.zoom + camera.x;
+  const mouseY = e.offsetY / camera.zoom + camera.y;
+
+  const tileX = Math.floor(mouseX / tileSize);
+  const tileY = Math.floor(mouseY / tileSize);
+
+  if (tileX > 255 || tileY > 255 || tileX < 0 || tileY < 0) return;
+
+  if (currentButton === 0) {
+    map[tileX][tileY] = 1; // Paint
+  } else if (currentButton === 2) {
+    map[tileX][tileY] = 0; // Erase
+  }
+
+  localStorage.setItem('map', JSON.stringify(map));
+};
+
+mainCanvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+mainCanvas.addEventListener('mousedown', (e) => {
+  isDrawing = true;
+  currentButton = e.button;
+  paintTile(e);
+});
+
+mainCanvas.addEventListener('mouseup', () => {
+  isDrawing = false;
+  currentButton = null;
+});
+
+mainCanvas.addEventListener('mouseleave', () => {
+  isDrawing = false;
+  currentButton = null;
+});
+
+mainCanvas.addEventListener('mousemove', (e) => {
+  if (isDrawing) paintTile(e);
+});
+
+const render = () => {
+  renderMain();
+  // renderTileset();
+
+  requestAnimationFrame(render);
+}
+
+render();
+
+let isPanning = false;
+let lastMouseX = 0;
+let lastMouseY = 0;
+
+mainCanvas.addEventListener('mousedown', (e) => {
+  if (e.button === 1) { // Middle mouse button
+    isPanning = true;
+    lastMouseX = e.clientX;
+    lastMouseY = e.clientY;
+    e.preventDefault(); // Prevents scroll behavior
+  }
+});
+
+window.addEventListener('mouseup', (e) => {
+  if (e.button === 1) {
+    isPanning = false;
+  }
+});
+
+window.addEventListener('mousemove', (e) => {
+  if (isPanning) {
+    const dx = (e.clientX - lastMouseX) / camera.zoom;
+    const dy = (e.clientY - lastMouseY) / camera.zoom;
+    camera.x -= dx;
+    camera.y -= dy;
+
+    lastMouseX = e.clientX;
+    lastMouseY = e.clientY;
+  }
+});
+
+mainCanvas.addEventListener('wheel', (e) => {
+  e.preventDefault();
+
+  const zoomFactor = 1.1;
+  const mouseX = e.offsetX / camera.zoom + camera.x;
+  const mouseY = e.offsetY / camera.zoom + camera.y;
+
+  if (e.deltaY < 0) {
+    camera.zoom *= zoomFactor;
+  } else {
+    camera.zoom /= zoomFactor;
+  }
+
+  camera.x = mouseX - (e.offsetX / camera.zoom);
+  camera.y = mouseY - (e.offsetY / camera.zoom);
+});
+
+const onExport = () => {
+  const exportString = `
+TILE_TYPE fill[MAP_SIZE][MAP_SIZE] = {
+${map.map((row) => `{${row.map((t) => t === 1 ? 'TILE_GROUND' : 'TILE_VOID').join(',')}},`).join('\n')}
+};
+`;
+
+console.log(exportString);
+}
+
+exportButton.addEventListener('click', onExport);
+
+</script>
+</body>
+</html>

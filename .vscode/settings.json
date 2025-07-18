@@ -18,6 +18,9 @@
     "_mingw_ddk.h": "c",
     "winresrc.h": "c",
     "game_state.h": "c",
-    "level.h": "c"
+    "level.h": "c",
+    "uthash.h": "c",
+    "editor.h": "c",
+    "stdbool.h": "c"
   }
 }

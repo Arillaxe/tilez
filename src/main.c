@@ -9,11 +9,18 @@ int main()
 {
   SetConfigFlags(FLAG_WINDOW_HIGHDPI);
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "FPS Test");
-  SetTargetFPS(60);
+  SetWindowMonitor(1);
+  // SetTargetFPS(60);
 
   GameState *gameState = getGameState();
 
-  gameState->tilesetTexture = LoadTexture("./resources/tiles.png");
+  gameState->tilesetTexture = LoadTexture("./resources/tiles_ramazan.png");
+
+  loadGameLib();
+
+  initFuncT initGame = getInitGameFunc();
+
+  initGame(gameState);
 
   while (!WindowShouldClose())
   {

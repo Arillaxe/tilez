@@ -62,6 +62,8 @@ typedef struct tagMSG *LPMSG;
 #include <windows.h>
 
 #undef PlaySound
+#undef near
+#undef far
 
 // Type required by some unused function...
 typedef struct tagBITMAPINFOHEADER
@@ -97,9 +99,12 @@ typedef struct tagBITMAPINFOHEADER
 #include "game_state.h"
 
 typedef void (*tickFuncT)(GameState *gameState);
+typedef void (*initFuncT)(GameState *gameState);
 
 void loadGameLib();
 
 void unloadGameLib();
 
 tickFuncT getGameTickFunc();
+
+initFuncT getInitGameFunc();
