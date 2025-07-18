@@ -9,6 +9,8 @@ EXPORT void initGame(GameState *gameState)
   gameState->camera.offset = (Vector2){0.0f, 0.0f};
   gameState->camera.rotation = 0.0f;
   gameState->camera.zoom = 1.0f;
+
+  gameState->player = createPlayer();
 }
 
 EXPORT void gameTick(GameState *gameState)
@@ -32,6 +34,14 @@ EXPORT void gameTick(GameState *gameState)
       }
     }
   }
+
+  float deltaTime = GetFrameTime();
+  UpdatePlayer(&gameState->player, deltaTime > 0.05f ? 0.05f : deltaTime, &gameState->level);
+
+  DrawPlayer(&gameState->player, &gameState->tilesetTexture);
+
+  // DrawDebugGrid(&gameState->level);
+  // DrawPlayerDebug(&gameState->player);
 
   EndMode2D();
 
