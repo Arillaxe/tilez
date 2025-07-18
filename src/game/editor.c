@@ -1,22 +1,15 @@
 #include "editor.h"
 
-static bool isActive = false;
-
-void setEditorActive(bool active)
-{
-  isActive = active;
-}
-
 static Vector2 prevMouse = {0};
 
 void updateEditor(GameState *gameState)
 {
   if (IsKeyPressed(KEY_F1))
   {
-    isActive = !isActive;
+    gameState->editorEnabled = !gameState->editorEnabled;
   }
 
-  if (!isActive)
+  if (!gameState->editorEnabled)
   {
     return;
   }
@@ -35,9 +28,36 @@ void updateEditor(GameState *gameState)
   }
   // --------------
 
+  Rectangle buttons[] = {
+      {SCREEN_WIDTH - 160, 40, 70, 30}, // Open
+      {SCREEN_WIDTH - 80, 40, 70, 30},  // Save
+  };
+
+  bool mouseOverUI = false;
+  Vector2 mouse = GetMousePosition();
+
+  for (int i = 0; i < sizeof(buttons) / sizeof(buttons[0]); i++)
+  {
+    if (GuiButton(buttons[i], (i == 0) ? "#1#Open" : "#2#Save"))
+    {
+      // Handle button click
+    }
+
+    if (CheckCollisionPointRec(mouse, buttons[i]))
+      mouseOverUI = true;
+  }
+
+  if (GuiButton(buttons[0], "#1#Open"))
+  {
+  }
+
+  if (GuiButton(buttons[1], "#2#Save"))
+  {
+  }
+
   // placing blocks
 
-  if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) || IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
+  if (!mouseOverUI && (IsMouseButtonDown(MOUSE_LEFT_BUTTON) || IsMouseButtonDown(MOUSE_BUTTON_RIGHT)))
   {
     Vector2 worldPos = GetScreenToWorld2D(GetMousePosition(), gameState->camera);
     int x = floor(worldPos.x / BLOCK_SIZE);
@@ -48,11 +68,7 @@ void updateEditor(GameState *gameState)
       gameState->level.tiles[x][y] = IsMouseButtonDown(MOUSE_LEFT_BUTTON) ? TILE_GROUND : TILE_VOID;
     }
   }
+  // ------------
 
-  drawEditor();
-}
-
-void drawEditor()
-{
   DrawText("Editor mode", SCREEN_WIDTH - 150, 10, 24, WHITE);
 }

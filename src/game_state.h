@@ -10,6 +10,7 @@ typedef struct GameState
   Level level;
   TileRule *tileRulesHashMap;
   Camera2D camera;
+  bool editorEnabled;
 } GameState;
 
 GameState *getGameState();

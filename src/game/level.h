@@ -1,6 +1,9 @@
 #pragma once
 
 #include "memory.h"
+#include <windows.h>
+#include <commdlg.h>
+#include <stdio.h>
 
 #define MAP_SIZE 256
 #define BLOCK_SIZE 32
@@ -17,3 +20,7 @@ typedef struct Level
 } Level;
 
 void initLevel(Level *level);
+
+void saveLevel();
+
+void loadLevel();
