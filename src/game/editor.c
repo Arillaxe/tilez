@@ -29,8 +29,12 @@ void updateEditor(GameState *gameState)
   // --------------
 
   Rectangle buttons[] = {
-      {SCREEN_WIDTH - 160, 40, 70, 30}, // Open
-      {SCREEN_WIDTH - 80, 40, 70, 30},  // Save
+      {SCREEN_WIDTH - 160, 40, 70, 30},  // Open
+      {SCREEN_WIDTH - 80, 40, 70, 30},   // Save
+      {SCREEN_WIDTH - 60, 80, 50, 50},   // TILE_GROUND
+      {SCREEN_WIDTH - 120, 80, 50, 50},  // TILE_PORTAL
+      {SCREEN_WIDTH - 60, 140, 50, 50},  // TILE_AETHER_PORTAL
+      {SCREEN_WIDTH - 120, 140, 50, 50}, // TILE_KEY
   };
 
   bool mouseOverUI = false;
@@ -38,11 +42,6 @@ void updateEditor(GameState *gameState)
 
   for (int i = 0; i < sizeof(buttons) / sizeof(buttons[0]); i++)
   {
-    if (GuiButton(buttons[i], (i == 0) ? "#1#Open" : "#2#Save"))
-    {
-      // Handle button click
-    }
-
     if (CheckCollisionPointRec(mouse, buttons[i]))
       mouseOverUI = true;
   }
@@ -81,7 +80,7 @@ void updateEditor(GameState *gameState)
 
     if (!(x < 0 || y < 0 || x > 255 || y > 255))
     {
-      gameState->level.tiles[x][y] = IsMouseButtonDown(MOUSE_LEFT_BUTTON) ? TILE_GROUND : TILE_VOID;
+      gameState->level.tiles[x][y] = IsMouseButtonDown(MOUSE_LEFT_BUTTON) ? gameState->currentEditorTileBrush : TILE_VOID;
     }
   }
   // ------------
@@ -107,6 +106,30 @@ void updateEditor(GameState *gameState)
   }
 
   // -----------------------
+
+  // Tile selection
+
+  if (GuiImageButton(buttons[2], gameState->tilesetTexture, (Rectangle){8 * 0, 8 * 3, 8, 8}))
+  {
+    gameState->currentEditorTileBrush = TILE_GROUND;
+  }
+
+  if (GuiImageButton(buttons[3], gameState->tilesetTexture, (Rectangle){8 * 0, 8 * 6, 8, 8}))
+  {
+    gameState->currentEditorTileBrush = TILE_PORTAL;
+  }
+
+  if (GuiImageButton(buttons[4], gameState->tilesetTexture, (Rectangle){8 * 2, 8 * 6, 8, 8}))
+  {
+    gameState->currentEditorTileBrush = TILE_AETHER_PORTAL;
+  }
+
+  if (GuiImageButton(buttons[5], gameState->tilesetTexture, (Rectangle){8 * 1, 8 * 6, 8, 8}))
+  {
+    gameState->currentEditorTileBrush = TILE_KEY;
+  }
+
+  // --------------
 
   DrawText("Editor mode", SCREEN_WIDTH - 150, 10, 24, WHITE);
 }

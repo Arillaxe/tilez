@@ -8,6 +8,7 @@
 #include "raygui.h"
 #include "../../macos/dialog.h"
 #include <stdio.h>
+#include "gui_image_button.h"
 
 void setEditorActive(bool active);
 

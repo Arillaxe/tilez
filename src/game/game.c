@@ -16,6 +16,8 @@ EXPORT void initGame(GameState *gameState)
   gameState->editorCamera.zoom = 1.0f;
 
   gameState->player = createPlayer();
+
+  gameState->currentEditorTileBrush = TILE_GROUND;
 }
 
 EXPORT void gameTick(GameState *gameState)
@@ -25,26 +27,14 @@ EXPORT void gameTick(GameState *gameState)
 
   BeginMode2D(gameState->editorEnabled ? gameState->editorCamera : gameState->playerCamera);
 
-  Level level = gameState->level;
-
-  for (int i = 0; i < MAP_SIZE; i++)
-  {
-    for (int j = 0; j < MAP_SIZE; j++)
-    {
-      if (level.tiles[i][j] == TILE_GROUND)
-      {
-        Rectangle srcRect = getTileSourceRect(gameState->tileRulesHashMap, &level, i, j);
-
-        DrawTexturePro(gameState->tilesetTexture, srcRect, (Rectangle){i * BLOCK_SIZE, j * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE}, (Vector2){0, 0}, 0.0f, WHITE);
-      }
-    }
-  }
+  DrawLevel(gameState);
 
   float deltaTime = GetFrameTime();
   UpdatePlayer(&gameState->player, deltaTime > 0.05f ? 0.05f : deltaTime, &gameState->level);
 
   DrawPlayer(&gameState->player, &gameState->tilesetTexture);
 
+  // Camera follow
   gameState->playerCamera.target = gameState->player.position;
 
   // DrawDebugGrid(&gameState->level);

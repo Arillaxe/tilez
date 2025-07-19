@@ -264,3 +264,33 @@ void initLevel(Level *level)
 
   memcpy(level->tiles, fill, sizeof(fill));
 }
+
+void DrawLevel(GameState *gameState)
+{
+  Level level = gameState->level;
+
+  for (int i = 0; i < MAP_SIZE; i++)
+  {
+    for (int j = 0; j < MAP_SIZE; j++)
+    {
+      if (level.tiles[i][j] == TILE_GROUND)
+      {
+        Rectangle srcRect = getTileSourceRect(gameState->tileRulesHashMap, &level, i, j);
+
+        DrawTexturePro(gameState->tilesetTexture, srcRect, (Rectangle){i * BLOCK_SIZE, j * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE}, (Vector2){0, 0}, 0.0f, WHITE);
+      }
+      else if (level.tiles[i][j] == TILE_PORTAL)
+      {
+        DrawTexturePro(gameState->tilesetTexture, (Rectangle){8 * 0, 8 * 6, 8, 8}, (Rectangle){i * BLOCK_SIZE, j * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE}, (Vector2){0, 0}, 0.0f, WHITE);
+      }
+      else if (level.tiles[i][j] == TILE_AETHER_PORTAL)
+      {
+        DrawTexturePro(gameState->tilesetTexture, (Rectangle){8 * 2, 8 * 6, 8, 8}, (Rectangle){i * BLOCK_SIZE, j * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE}, (Vector2){0, 0}, 0.0f, WHITE);
+      }
+      else if (level.tiles[i][j] == TILE_KEY)
+      {
+        DrawTexturePro(gameState->tilesetTexture, (Rectangle){8 * 1, 8 * 6, 8, 8}, (Rectangle){i * BLOCK_SIZE, j * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE}, (Vector2){0, 0}, 0.0f, WHITE);
+      }
+    }
+  }
+}

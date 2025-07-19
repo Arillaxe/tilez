@@ -13,6 +13,7 @@ typedef struct GameState
   Camera2D playerCamera;
   Camera2D editorCamera;
   Player player;
+  TILE_TYPE currentEditorTileBrush;
   bool editorEnabled;
 } GameState;
 

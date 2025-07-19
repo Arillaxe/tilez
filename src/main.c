@@ -16,6 +16,8 @@ int main()
 
   gameState->tilesetTexture = LoadTexture("./resources/tiles_ramazan.png");
 
+  SetTextureFilter(gameState->tilesetTexture, TEXTURE_FILTER_POINT);
+
   loadGameLib();
 
   initFuncT initGame = getInitGameFunc();
