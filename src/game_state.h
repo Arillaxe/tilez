@@ -10,7 +10,8 @@ typedef struct GameState
   Texture2D tilesetTexture;
   Level level;
   TileRule *tileRulesHashMap;
-  Camera2D camera;
+  Camera2D playerCamera;
+  Camera2D editorCamera;
   Player player;
   bool editorEnabled;
 } GameState;

@@ -19,12 +19,12 @@ Player createPlayer()
 void UpdatePlayer(Player *player, float delta, Level *level)
 {
   // Horizontal movement
-  if (IsKeyDown(KEY_RIGHT))
+  if (IsKeyDown(KEY_D))
   {
     player->velocity.x = player->speed;
     player->facingRight = true;
   }
-  else if (IsKeyDown(KEY_LEFT))
+  else if (IsKeyDown(KEY_A))
   {
     player->velocity.x = -player->speed;
     player->facingRight = false;

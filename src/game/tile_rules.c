@@ -314,7 +314,7 @@ uint8_t getTileBitmask(Level *level, int x, int y)
     TILE_TYPE neighbor =
         (nx >= 0 && nx < MAP_SIZE && ny >= 0 && ny < MAP_SIZE)
             ? level->tiles[nx][ny]
-            : TILE_GROUND;
+            : TILE_VOID;
 
     if (neighbor == TILE_GROUND)
     {

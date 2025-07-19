@@ -23,7 +23,7 @@ void updateEditor(GameState *gameState)
   {
     Vector2 mouse = GetMousePosition();
     Vector2 delta = Vector2Subtract(prevMouse, mouse);
-    gameState->camera.target = Vector2Add(gameState->camera.target, Vector2Scale(delta, 1.0f / gameState->camera.zoom));
+    gameState->editorCamera.target = Vector2Add(gameState->editorCamera.target, Vector2Scale(delta, 1.0f / gameState->editorCamera.zoom));
     prevMouse = mouse;
   }
   // --------------
@@ -49,24 +49,24 @@ void updateEditor(GameState *gameState)
 
   if (GuiButton(buttons[0], "#1#Open"))
   {
-    char *filename = openFileDialog();
+    const char *filename = openFileDialog();
     FILE *file = fopen(filename, "rb");
 
     if (file)
     {
-      size_t read = fread(&gameState->level.tiles, sizeof(TILE_TYPE), MAP_SIZE * MAP_SIZE, file);
+      fread(&gameState->level.tiles, sizeof(TILE_TYPE), MAP_SIZE * MAP_SIZE, file);
       fclose(file);
     }
   }
 
   if (GuiButton(buttons[1], "#2#Save"))
   {
-    char *filename = saveFileDialog();
+    const char *filename = saveFileDialog();
     FILE *file = fopen(filename, "wb");
 
     if (file)
     {
-      size_t written = fwrite(&gameState->level.tiles, sizeof(TILE_TYPE), MAP_SIZE * MAP_SIZE, file);
+      fwrite(&gameState->level.tiles, sizeof(TILE_TYPE), MAP_SIZE * MAP_SIZE, file);
       fclose(file);
     }
   }
@@ -75,7 +75,7 @@ void updateEditor(GameState *gameState)
 
   if (!mouseOverUI && (IsMouseButtonDown(MOUSE_LEFT_BUTTON) || IsMouseButtonDown(MOUSE_BUTTON_RIGHT)))
   {
-    Vector2 worldPos = GetScreenToWorld2D(GetMousePosition(), gameState->camera);
+    Vector2 worldPos = GetScreenToWorld2D(GetMousePosition(), gameState->editorCamera);
     int x = floor(worldPos.x / BLOCK_SIZE);
     int y = floor(worldPos.y / BLOCK_SIZE);
 
@@ -85,6 +85,28 @@ void updateEditor(GameState *gameState)
     }
   }
   // ------------
+
+  // camera zoom scrollwheel
+
+  float wheel = GetMouseWheelMove();
+
+  if (wheel != 0.0f)
+  {
+    Vector2 mouseWorldPos = GetScreenToWorld2D(GetMousePosition(), gameState->editorCamera);
+
+    float zoomIncrement = 1.0f + (wheel * 0.1f);
+    gameState->editorCamera.zoom *= zoomIncrement;
+
+    if (gameState->editorCamera.zoom < 0.1f)
+      gameState->editorCamera.zoom = 0.1f;
+    if (gameState->editorCamera.zoom > 3.0f)
+      gameState->editorCamera.zoom = 3.0f;
+
+    Vector2 newMouseWorldPos = GetScreenToWorld2D(GetMousePosition(), gameState->editorCamera);
+    gameState->editorCamera.target = Vector2Add(gameState->editorCamera.target, Vector2Subtract(mouseWorldPos, newMouseWorldPos));
+  }
+
+  // -----------------------
 
   DrawText("Editor mode", SCREEN_WIDTH - 150, 10, 24, WHITE);
 }
