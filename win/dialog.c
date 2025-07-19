@@ -3,7 +3,7 @@
 #include <windows.h>
 #include <commdlg.h>
 #include <string.h>
-#include "win_dialog.h"
+#include "dialog.h"
 
 static char filePath[MAX_PATH] = {0};
 

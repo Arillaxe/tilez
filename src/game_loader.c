@@ -68,7 +68,7 @@ void loadGameLib()
 
     if (!gameLib)
     {
-      PrintLastError("Failed to load DLL");
+      printf("Failed to load DLL");
       exit(1);
     }
 

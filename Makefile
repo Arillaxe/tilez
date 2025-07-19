@@ -16,7 +16,7 @@ ifeq ($(OS),Windows_NT)
 	OUT := $(OUT).exe
 	OUT_GAME := $(OUT_GAME).dll
 	LDFLAGS += -lraylib -lopengl32 -lgdi32 -lwinmm
-	LDFLAGS_SHARED += -shared -lraylib -lopengl32 -lgdi32 -lwinmm
+	LDFLAGS_SHARED += -shared -lraylib -lopengl32 -lgdi32 -lwinmm -ldialog -L./out -lcomdlg32
 else
 	OUT_GAME := $(OUT_GAME).dylib
 	LDFLAGS += -lraylib.550 -Wl,-rpath,@loader_path/../bin -framework Cocoa -framework IOKit -framework CoreFoundation -framework CoreVideo -framework OpenGL
@@ -30,9 +30,15 @@ all: game main
 make_dirs:
 	mkdir -p out
 
+ifeq ($(OS),Windows_NT)
+out/libdialog.a: win/dialog.c win/dialog.h
+	$(CC) -c win/dialog.c -o out/dialog.o
+	ar rcs out/libdialog.a out/dialog.o
+else
 out/libdialog.a: macos/dialog.m macos/dialog.h
 	$(CC) -c macos/dialog.m -o out/dialog.o -ObjC -framework Cocoa
 	ar rcs out/libdialog.a out/dialog.o
+endif
 
 $(OUT_DIR)/$(OUT): $(SRC) $(SRC_HEADERS)
 	$(CC) $(SRC) -o $(OUT_DIR)/$(OUT) $(CFLAGS) $(LDFLAGS)
@@ -42,7 +48,7 @@ $(OUT_DIR)/$(OUT_GAME): $(GAME_SRC) $(GAME_HEADERS) $(OUT_DIR)/raylib.dll
 else
 $(OUT_DIR)/$(OUT_GAME): $(GAME_SRC) $(GAME_HEADERS)
 endif
-	$(CC) $(GAME_SRC) -o $(OUT_DIR)/$(OUT_GAME) $(CFLAGS) $(LDFLAGS_SHARED) -ldialog -L./out
+	$(CC) $(GAME_SRC) -o $(OUT_DIR)/$(OUT_GAME) $(CFLAGS) $(LDFLAGS_SHARED)
 
 main: make_dirs
 	make $(OUT_DIR)/$(OUT)
