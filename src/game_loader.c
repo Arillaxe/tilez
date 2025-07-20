@@ -1,4 +1,5 @@
 #include "game_loader.h"
+#include <shlwapi.h>
 
 static tickFuncT gameTick = NULL;
 static initFuncT initGame = NULL;
@@ -35,8 +36,16 @@ time_t getFileModTime(const char *path)
 void loadGameLib()
 {
 #ifdef WINDOWS
-  static const char *dllPath = "./out/libgamelib.dll";
-  static const char *dllCopyPath = "./out/libgamelib-copy.dll";
+  char exePath[MAX_PATH];
+  GetModuleFileName(NULL, exePath, MAX_PATH);
+  PathRemoveFileSpec(exePath);
+
+  char dllPath[MAX_PATH];
+  char dllCopyPath[MAX_PATH];
+
+  snprintf(dllPath, sizeof(dllPath), "%s\\%s", exePath, "libgamelib.dll");
+  snprintf(dllCopyPath, sizeof(dllCopyPath), "%s\\%s", exePath, "libgamelib-copy.dll");
+
 #elif defined MACOS
   static const char *dllPath = "./out/libgamelib.dylib";
 #endif

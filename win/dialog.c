@@ -1,6 +1,7 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <windows.h>
+#include <shlwapi.h>
 #include <commdlg.h>
 #include <string.h>
 #include "dialog.h"
@@ -13,10 +14,15 @@ const char *openFileDialog()
   ZeroMemory(&ofn, sizeof(ofn));
   filePath[0] = '\0';
 
+  char exePath[MAX_PATH];
+  GetModuleFileName(NULL, exePath, MAX_PATH);
+  PathRemoveFileSpec(exePath);
+
   ofn.lStructSize = sizeof(ofn);
   ofn.hwndOwner = NULL;
   ofn.lpstrFile = filePath;
   ofn.nMaxFile = sizeof(filePath);
+  ofn.lpstrInitialDir = exePath;
   ofn.lpstrFilter = "Level Files\0*.lvl\0All Files\0*.*\0";
   ofn.nFilterIndex = 1;
   ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
@@ -32,10 +38,15 @@ const char *saveFileDialog()
   ZeroMemory(&ofn, sizeof(ofn));
   filePath[0] = '\0';
 
+  char exePath[MAX_PATH];
+  GetModuleFileName(NULL, exePath, MAX_PATH);
+  PathRemoveFileSpec(exePath);
+
   ofn.lStructSize = sizeof(ofn);
   ofn.hwndOwner = NULL;
   ofn.lpstrFile = filePath;
   ofn.nMaxFile = sizeof(filePath);
+  ofn.lpstrInitialDir = exePath;
   ofn.lpstrFilter = "Level Files\0*.lvl\0All Files\0*.*\0";
   ofn.nFilterIndex = 1;
   ofn.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT;

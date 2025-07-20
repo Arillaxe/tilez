@@ -131,5 +131,31 @@ void updateEditor(GameState *gameState)
 
   // --------------
 
+  // draw level boundaries
+
+  BeginMode2D(gameState->editorCamera);
+
+  DrawRectangleLines(0, 0, BLOCK_SIZE * MAP_SIZE, BLOCK_SIZE * MAP_SIZE, RED);
+
+  int levelSize = BLOCK_SIZE * MAP_SIZE;
+  int roomsX = levelSize / SCREEN_WIDTH * gameState->playerCamera.zoom;
+  int roomsY = levelSize / SCREEN_HEIGHT * gameState->playerCamera.zoom;
+  int roomWidth = SCREEN_WIDTH / gameState->playerCamera.zoom;
+  int roomHeigth = SCREEN_HEIGHT / gameState->playerCamera.zoom;
+
+  for (int i = 1; i < roomsX; i++)
+  {
+    DrawLine(roomWidth * i, 0, roomWidth * i, levelSize, RED);
+  }
+
+  for (int i = 1; i < roomsY; i++)
+  {
+    DrawLine(0, roomHeigth * i, levelSize, roomHeigth * i, RED);
+  }
+
+  EndMode2D();
+
+  // ---------------------
+
   DrawText("Editor mode", SCREEN_WIDTH - 150, 10, 24, WHITE);
 }

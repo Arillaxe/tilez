@@ -23,6 +23,13 @@
     "editor.h": "c",
     "stdbool.h": "c",
     "limits": "c",
-    "style_jungle.h": "c"
+    "style_jungle.h": "c",
+    "tile_rules.h": "c",
+    "player.h": "c",
+    "memory.h": "c",
+    "cmath": "c",
+    "array": "c",
+    "system_error": "c",
+    "functional": "c"
   }
 }
