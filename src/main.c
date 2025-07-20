@@ -10,7 +10,7 @@ int main()
   SetConfigFlags(FLAG_WINDOW_HIGHDPI);
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "FPS Test");
   // SetWindowMonitor(1);
-  // SetTargetFPS(60);
+  SetTargetFPS(GetMonitorRefreshRate(0));
 
   GameState *gameState = getGameState();
 

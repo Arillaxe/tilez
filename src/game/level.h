@@ -3,6 +3,8 @@
 #define MAP_SIZE 256
 #define BLOCK_SIZE 32
 
+#include "raylib.h"
+
 typedef struct GameState GameState;
 
 typedef enum TILE_TYPE
@@ -18,8 +20,13 @@ typedef enum TILE_TYPE
 typedef struct Level
 {
   TILE_TYPE tiles[MAP_SIZE][MAP_SIZE];
+  RenderTexture2D levelTexture;
 } Level;
 
 void initLevel(Level *level);
+
+void UpdateTileRender(GameState *gameState, int tileX, int tileY);
+
+void InitLevelTexture(GameState *gameState);
 
 void DrawLevel(GameState *gameState);

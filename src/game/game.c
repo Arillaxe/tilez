@@ -18,6 +18,8 @@ EXPORT void initGame(GameState *gameState)
   gameState->player = createPlayer();
 
   gameState->currentEditorTileBrush = TILE_GROUND;
+
+  InitLevelTexture(gameState);
 }
 
 EXPORT void gameTick(GameState *gameState)

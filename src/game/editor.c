@@ -81,6 +81,7 @@ void updateEditor(GameState *gameState)
     if (!(x < 0 || y < 0 || x > 255 || y > 255))
     {
       gameState->level.tiles[x][y] = IsMouseButtonDown(MOUSE_LEFT_BUTTON) ? gameState->currentEditorTileBrush : TILE_VOID;
+      UpdateTileRender(gameState, x, y);
     }
   }
   // ------------
