@@ -1,6 +1,6 @@
 #include "game.h"
 
-EXPORT void initGame(GameState *gameState)
+EXPORT void init(GameState *gameState)
 {
   initTileRulesHashMap(&gameState->tileRulesHashMap);
   initLevel(&gameState->level);
@@ -19,10 +19,12 @@ EXPORT void initGame(GameState *gameState)
 
   gameState->currentEditorTileBrush = TILE_GROUND;
 
+  gameState->prevMousePos = (Vector2){0.0f, 0.0f};
+
   InitLevelTexture(gameState);
 }
 
-EXPORT void gameTick(GameState *gameState)
+EXPORT void tick(GameState *gameState)
 {
   BeginDrawing();
   ClearBackground(BLACK);
@@ -36,7 +38,7 @@ EXPORT void gameTick(GameState *gameState)
 
   DrawPlayer(&gameState->player, &gameState->tilesetTexture);
 
-  // Camera follow
+  // Camera snap
   float roomW = SCREEN_WIDTH / gameState->playerCamera.zoom;
   float roomH = SCREEN_HEIGHT / gameState->playerCamera.zoom;
 

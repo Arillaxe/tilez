@@ -13,31 +13,22 @@ int main()
   SetTargetFPS(GetMonitorRefreshRate(0));
 
   GameState *gameState = getGameState();
-
   gameState->tilesetTexture = LoadTexture("./resources/tiles_ramazan.png");
-
   SetTextureFilter(gameState->tilesetTexture, TEXTURE_FILTER_POINT);
 
-  loadGameLib();
+  loaderInit();
+  GameFunctions *gameFunctions = getGameFunctions();
 
-  initFuncT initGame = getInitGameFunc();
-
-  initGame(gameState);
+  gameFunctions->init(gameState);
 
   while (!WindowShouldClose())
   {
-    loadGameLib();
+    loaderUpdate();
 
-    tickFuncT gameTick = getGameTickFunc();
-
-    if (gameTick)
-    {
-      gameTick(gameState);
-    }
+    gameFunctions->tick(gameState);
   }
 
-  unloadGameLib();
-
+  loaderCleanUp();
   CloseWindow();
 
   return 0;

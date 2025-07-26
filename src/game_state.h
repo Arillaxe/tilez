@@ -15,6 +15,7 @@ typedef struct GameState
   Player player;
   TILE_TYPE currentEditorTileBrush;
   bool editorEnabled;
+  Vector2 prevMousePos;
 } GameState;
 
 GameState *getGameState();

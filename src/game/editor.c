@@ -1,6 +1,6 @@
 #include "editor.h"
-
-static Vector2 prevMouse = {0};
+#include "../platform/platform.h"
+#include <errno.h>
 
 void updateEditor(GameState *gameState)
 {
@@ -17,14 +17,14 @@ void updateEditor(GameState *gameState)
   // camera panning
 
   if (IsMouseButtonPressed(MOUSE_MIDDLE_BUTTON))
-    prevMouse = GetMousePosition();
+    gameState->prevMousePos = GetMousePosition();
 
   if (IsMouseButtonDown(MOUSE_MIDDLE_BUTTON))
   {
     Vector2 mouse = GetMousePosition();
-    Vector2 delta = Vector2Subtract(prevMouse, mouse);
+    Vector2 delta = Vector2Subtract(gameState->prevMousePos, mouse);
     gameState->editorCamera.target = Vector2Add(gameState->editorCamera.target, Vector2Scale(delta, 1.0f / gameState->editorCamera.zoom));
-    prevMouse = mouse;
+    gameState->prevMousePos = mouse;
   }
   // --------------
 
@@ -48,24 +48,34 @@ void updateEditor(GameState *gameState)
 
   if (GuiButton(buttons[0], "#1#Open"))
   {
-    const char *filename = openFileDialog();
+    char filename[256];
+    openFileDialog(filename, 256);
+
     FILE *file = fopen(filename, "rb");
 
     if (file)
     {
-      fread(&gameState->level.tiles, sizeof(TILE_TYPE), MAP_SIZE * MAP_SIZE, file);
+      fread(gameState->level.tiles, sizeof(TILE_TYPE), MAP_SIZE * MAP_SIZE, file);
       fclose(file);
+
+      InitLevelTexture(gameState);
+    }
+    else
+    {
+      printf("fopen failed: %s\n", strerror(errno));
     }
   }
 
   if (GuiButton(buttons[1], "#2#Save"))
   {
-    const char *filename = saveFileDialog();
+    char filename[256];
+    saveFileDialog(filename, 256);
+
     FILE *file = fopen(filename, "wb");
 
     if (file)
     {
-      fwrite(&gameState->level.tiles, sizeof(TILE_TYPE), MAP_SIZE * MAP_SIZE, file);
+      fwrite(gameState->level.tiles, sizeof(TILE_TYPE), MAP_SIZE * MAP_SIZE, file);
       fclose(file);
     }
   }

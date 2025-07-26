@@ -30,6 +30,9 @@
     "cmath": "c",
     "array": "c",
     "system_error": "c",
-    "functional": "c"
+    "functional": "c",
+    "time.h": "c",
+    "platform.h": "c",
+    "*.cold": "c"
   }
 }
