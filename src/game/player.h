@@ -2,19 +2,18 @@
 
 #include "raylib.h"
 #include "level.h"
-#include "math.h"
 
 typedef struct Player
 {
-  Vector2 position; // The player's position (top-left or center)
-  Vector2 velocity; // The player's velocity (x/y speed)
-  Rectangle bounds; // Bounding box for collision detection
-  bool onGround;    // Whether the player is standing on the ground
-  bool facingRight; // Direction the player is facing
-  bool isJumping;   // Whether the player is currently jumping
-  float speed;      // Horizontal speed
-  float jumpForce;  // Jump strength
-  float gravity;    // Gravity applied to the player
+  Vector2 position;
+  Vector2 velocity;
+  Rectangle bounds;
+  bool onGround;
+  bool facingRight;
+  bool isJumping;
+  float speed;
+  float jumpForce;
+  float gravity;
 } Player;
 
 Player createPlayer();

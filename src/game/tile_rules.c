@@ -1,4 +1,6 @@
 #include "tile_rules.h"
+#include <stdint.h>
+#include "stdio.h"
 
 TileRule tileRules[256] = {
     {0b00000000, 24},

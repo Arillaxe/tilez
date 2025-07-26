@@ -2,6 +2,7 @@
 
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
+#include "../globals.h"
 
 void drawUI()
 {

@@ -33,6 +33,7 @@
     "functional": "c",
     "time.h": "c",
     "platform.h": "c",
-    "*.cold": "c"
+    "*.cold": "c",
+    "ui.h": "c"
   }
 }

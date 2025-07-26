@@ -4,6 +4,7 @@
 #include "tile_rules.h"
 #include "../game_state.h"
 #include "rlgl.h"
+#include <stdio.h>
 
 void initLevel(Level *level)
 {

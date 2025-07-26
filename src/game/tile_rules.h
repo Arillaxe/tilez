@@ -1,10 +1,8 @@
 #pragma once
 
-#include <stdint.h>
 #include "uthash.h"
 #include "raylib.h"
 #include "level.h"
-#include "stdio.h"
 
 #define TILE_SIZE 8
 #define ATLAS_WIDTH 64

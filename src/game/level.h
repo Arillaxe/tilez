@@ -1,9 +1,9 @@
 #pragma once
 
+#include "raylib.h"
+
 #define MAP_SIZE 256
 #define BLOCK_SIZE 32
-
-#include "raylib.h"
 
 typedef struct GameState GameState;
 

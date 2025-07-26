@@ -1,4 +1,10 @@
 #include "game.h"
+#include "editor.h"
+#include "ui.h"
+#include <raylib.h>
+#include "stdio.h"
+#include <math.h>
+#include "../globals.h"
 
 EXPORT void init(GameState *gameState)
 {

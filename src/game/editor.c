@@ -1,5 +1,11 @@
 #include "editor.h"
 #include "../platform/platform.h"
+#include "raylib.h"
+#include "raymath.h"
+#include "../globals.h"
+#include "raygui.h"
+#include <stdio.h>
+#include "gui_image_button.h"
 #include <errno.h>
 
 void updateEditor(GameState *gameState)

@@ -1,11 +1,12 @@
 #include "player.h"
+#include "math.h"
 
 Player createPlayer()
 {
   Player player = {
       .position = {100, 100},
       .velocity = {0, 0},
-      .bounds = {100, 100, 32, 32}, // Player size 32x32
+      .bounds = {100, 100, 32, 32},
       .onGround = false,
       .facingRight = true,
       .isJumping = false,
