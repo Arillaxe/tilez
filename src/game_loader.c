@@ -9,7 +9,7 @@ static GameFunctions gameFunctions;
 
 void loaderInit()
 {
-  getExecutableDirectory(exePath);
+  getExecutableDirectory(exePath, 1024);
   snprintf(exePath, sizeof(exePath), "%s\\%s", exePath, getGameLibraryName());
 
   // initial load

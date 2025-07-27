@@ -2,8 +2,8 @@
 #include "game/game.h"
 #include <raylib.h>
 #include "globals.h"
-
 #include "game_state.h"
+#include "platform/platform.h"
 
 int main()
 {
@@ -12,8 +12,11 @@ int main()
   // SetWindowMonitor(1);
   SetTargetFPS(GetMonitorRefreshRate(0));
 
+  char texturePath[256];
+  buildPath(texturePath, 256, "../resources/tiles_ramazan.png");
+
   GameState *gameState = getGameState();
-  gameState->tilesetTexture = LoadTexture("./resources/tiles_ramazan.png");
+  gameState->tilesetTexture = LoadTexture(texturePath);
   SetTextureFilter(gameState->tilesetTexture, TEXTURE_FILTER_POINT);
 
   loaderInit();

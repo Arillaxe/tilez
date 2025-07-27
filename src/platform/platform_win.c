@@ -1,6 +1,7 @@
 #include "platform.h"
 #include <windows.h>
 #include <shlwapi.h>
+#include "stdio.h"
 
 time_t getFileModTime(char *path)
 {
@@ -33,9 +34,9 @@ void *getLibraryFunction(LibHandle handle, char *functionName)
   return GetProcAddress(handle, functionName);
 }
 
-void getExecutableDirectory(char *out)
+void getExecutableDirectory(char *out, size_t outSize)
 {
-  GetModuleFileName(NULL, out, MAX_PATH);
+  GetModuleFileName(NULL, out, outSize);
   PathRemoveFileSpec(out);
 }
 
@@ -46,7 +47,7 @@ void openFileDialog(char *out, size_t outSize)
 
   out[0] = '\0';
 
-  getExecutableDirectory(out);
+  getExecutableDirectory(out, outSize);
 
   ofn.lStructSize = sizeof(ofn);
   ofn.hwndOwner = NULL;
@@ -67,7 +68,7 @@ void saveFileDialog(char *out, size_t outSize)
 
   out[0] = '\0';
 
-  getExecutableDirectory(out);
+  getExecutableDirectory(out, outSize);
 
   ofn.lStructSize = sizeof(ofn);
   ofn.hwndOwner = NULL;
@@ -84,4 +85,15 @@ void saveFileDialog(char *out, size_t outSize)
 const char *getGameLibraryName()
 {
   return "game.dll";
+}
+
+void buildPath(char *out, size_t outSize, const char *string)
+{
+  char appDir[outSize];
+  char tempPath[outSize];
+
+  GetModuleFileName(NULL, appDir, outSize);
+  PathRemoveFileSpec(appDir);
+  PathCombine(tempPath, appDir, string);
+  GetFullPathName(tempPath, outSize, out, NULL);
 }

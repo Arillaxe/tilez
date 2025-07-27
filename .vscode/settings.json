@@ -34,6 +34,8 @@
     "time.h": "c",
     "platform.h": "c",
     "*.cold": "c",
-    "ui.h": "c"
+    "ui.h": "c",
+    "utils.h": "c",
+    "shlwapi.h": "c"
   }
 }
