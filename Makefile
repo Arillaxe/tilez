@@ -25,14 +25,18 @@ endif
 
 .PHONY: game
 
+.INTERMEDIATE: out/libplatform.a out/libplatform.o
+
 all: game main
 
 make_dirs:
 	mkdir -p out
 
 ifeq ($(OS),Windows_NT)
-out/libplatform.a: src/platform/platform_win.c src/platform/platform.h
+out/libplatform.o: src/platform/platform_win.c src/platform/platform.h
 	$(CC) -c src/platform/platform_win.c -o out/libplatform.o
+
+out/libplatform.a: out/libplatform.o
 	ar rcs out/libplatform.a out/libplatform.o
 else
 out/libplatform.a: src/platform/platform_mac.c src/platform/platform.h

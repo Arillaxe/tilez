@@ -1,5 +1,4 @@
 # TODO
 
-1. path resolution
-2. build script
-3. dynamic tilesets for editor
+1. networking
+2. dynamic tilesets for editor
